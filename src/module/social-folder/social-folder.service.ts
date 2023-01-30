@@ -9,7 +9,8 @@ export class SocialFolderService {
     async create(data: SocialFolderDTO) {
         const midiaExists = await this.PrismaClient.sociaMidia.findFirst({
             where: {
-                nickname: data.nickname
+                nickname: data.nickname,
+                link: data.link
             }
         });
 
@@ -20,5 +21,50 @@ export class SocialFolderService {
         const socialMidia = this.PrismaClient.sociaMidia.create({data});
 
         return socialMidia
+    }
+
+    async find (userId:string) {
+        return this.PrismaClient.sociaMidia.findMany({
+            where :{
+                userId: userId
+            }
+        })
+    }
+
+    async update(id: string, data: SocialFolderDTO){
+        const socialExists = await this.PrismaClient.sociaMidia.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if (!socialExists) {
+            throw new Error("Social is not exists")
+        }
+
+        return await this.PrismaClient.sociaMidia.update({
+            data,
+            where:{
+                id
+            }
+        })
+    }
+
+    async delete(id: string){
+        const socialExists = await this.PrismaClient.sociaMidia.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if (!socialExists) {
+            throw new Error("Social is not exists")
+        }
+
+        return await this.PrismaClient.sociaMidia.delete({
+            where:{
+                id
+            }
+        })
     }
 }
