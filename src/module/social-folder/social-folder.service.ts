@@ -15,7 +15,7 @@ export class SocialFolderService {
         });
 
         if (midiaExists) {
-            throw new Error("User already exists");
+            throw new Error("Midia already exists");
         }
 
         const socialMidia = this.PrismaClient.sociaMidia.create({data});

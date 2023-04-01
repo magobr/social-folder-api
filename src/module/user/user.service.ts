@@ -32,4 +32,34 @@ export class UserService {
             }
         }
     }
+
+    async find(id: string) {
+        
+    }
+
+    async findUserSocial(nickname:string){
+        const userExists = await this.PrismaClient.user.findFirst({
+            where: {
+                nickname: nickname
+            },
+            select:{
+                id: true,
+                email: true,
+                nickname: true,
+                name: true,
+                socialMidia: true
+            },
+            
+        });
+
+        if (!userExists) {
+            throw new Error ("User don't exists")            
+        }
+
+        return {
+            error: false,
+            message: 'Usuário encontrado com sucesso',
+            data: userExists
+        }
+    }
 }
