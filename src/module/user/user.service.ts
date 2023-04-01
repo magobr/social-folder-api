@@ -27,9 +27,78 @@ export class UserService {
             message: 'Usuário cadastrado com sucesso',
             data: {
                 id: data.id,
-                nameUser: data.name,
+                name: data.name,
+                nickname: data.nickname,
                 email: data.email
             }
         }
+    }
+
+    async find(id: string) {
+        const userExists = await this.PrismaClient.user.findFirst({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true, 
+                nickname: true
+            }
+        });
+
+        if (!userExists) {
+            throw new Error ("User don't exists")
+        }
+
+        return {
+            error: false,
+            message: 'Usuário encontrado com sucesso',
+            data: userExists
+        }
+    }
+
+    async update(id: string, data: UserDTO){
+        const userExists = await this.PrismaClient.user.findFirst({
+            where: {
+                id: id
+            }
+        });
+
+        if (!userExists) {
+            throw new Error("User don't exists");
+        }
+
+        return await this.PrismaClient.user.update({
+            data,
+            where:{
+                id: id
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                nickname: true
+            }
+        })        
+    }
+
+    async delete(id: string){
+        const userExists = await this.PrismaClient.user.findFirst({
+            where: {
+                id: id
+            }
+        });
+
+        if (!userExists) {
+            throw new Error("User don't exists");
+        }
+
+        return this.PrismaClient.user.delete({
+            where:{
+                id: id
+            }
+        });
+
     }
 }
