@@ -1,6 +1,8 @@
 import { GoogleOAuthGuard } from './google-oauth.guard';
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express'
 import { AppService } from './auth.service';
+import { appLoginDto } from './auth.dto';
 
 @Controller('auth')
 export class AppController {
@@ -12,7 +14,30 @@ export class AppController {
 
   @Get('google-redirect')
   @UseGuards(GoogleOAuthGuard)
-  googleAuthRedirect(@Request() req) {
-    return this.appService.googleLogin(req);
+  async googleAuthRedirect(@Request() req, @Res({ passthrough: true }) res: Response) {
+    const retorno = await this.appService.googleLogin(req);
+    res.cookie('USER_INFO', retorno.app.token)
+    return retorno
+  }
+
+  @Post()
+  async login(@Body() data: appLoginDto, @Res({ passthrough: true }) res: Response){
+    const retorno = await this.appService.appLogin(data);
+    res.cookie('USER_INFO', retorno.token)
+    return retorno
+  }
+
+  @Get('logout')
+  async logout(@Res({ passthrough: true }) res: Response){
+  
+    res.clearCookie('USER_INFO',{
+      expires: new Date(),
+      maxAge: 0
+    });
+    
+    return {
+      error: false,
+      message: "deslogado com sucesso"
+    }
   }
 }
