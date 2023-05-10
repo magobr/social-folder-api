@@ -16,14 +16,12 @@ export class AppController {
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(@Request() req, @Res({ passthrough: true }) res: Response) {
     const retorno = await this.appService.googleLogin(req);
-    res.cookie('USER_INFO', retorno.app.token)
     return retorno
   }
 
   @Post()
   async login(@Body() data: appLoginDto, @Res({ passthrough: true }) res: Response){
     const retorno = await this.appService.appLogin(data);
-    res.cookie('USER_INFO', retorno.token)
     return retorno
   }
 

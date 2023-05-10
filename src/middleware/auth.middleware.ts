@@ -5,8 +5,15 @@ import { Request, Response, NextFunction } from 'express'
 export class AuthMiddleware implements NestMiddleware{
     use(req: Request, res: Response, next: NextFunction) {
         
-        console.log(req.cookies);
+        const authUser = req.headers.authorization.split(' ');
 
+        if (!authUser) {
+            res.status(401).json({
+                error: true,
+                message: "Nessesário estar autenticado",
+            });
+        }
+    
         next()
     }
 }
