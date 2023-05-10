@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserDTO } from './user.dto';
 import { PrismaService } from 'src/database/PrismaService';
 import * as md5 from 'md5';
+import { Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -35,6 +36,7 @@ export class UserService {
     }
 
     async find(id: string) {
+
         const userExists = await this.PrismaClient.user.findFirst({
             where: {
                 id: id
@@ -100,5 +102,10 @@ export class UserService {
             }
         });
 
+    }
+
+    private extractTokenFromHeader(request: Request): string | undefined {
+        const [type, token] = request.headers.authorization?.split(' ') ?? [];
+        return type === 'Bearer' ? token : undefined;
     }
 }
