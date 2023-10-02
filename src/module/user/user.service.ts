@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserDTO } from './user.dto';
 import { PrismaService } from 'src/database/PrismaService';
 import * as md5 from 'md5';
@@ -61,6 +61,9 @@ export class UserService {
     }
 
     async update(id: string, data: UserDTO){
+
+        if (Object.keys(data).length < 1) throw new HttpException("Requisição sem corpo", HttpStatus.UNPROCESSABLE_ENTITY) 
+
         const userExists = await this.PrismaClient.user.findFirst({
             where: {
                 id: id
@@ -68,7 +71,7 @@ export class UserService {
         });
 
         if (!userExists) {
-            throw new Error("User don't exists");
+            throw new HttpException("User don't exists", HttpStatus.NOT_FOUND);
         }
 
         return await this.PrismaClient.user.update({
@@ -82,7 +85,7 @@ export class UserService {
                 email: true,
                 nickname: true
             }
-        })        
+        })
     }
 
     async delete(id: string){
@@ -102,10 +105,5 @@ export class UserService {
             }
         });
 
-    }
-
-    private extractTokenFromHeader(request: Request): string | undefined {
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : undefined;
     }
 }
