@@ -1,4 +1,3 @@
-import { GoogleStrategy } from './google.strategy';
 import { Module } from '@nestjs/common';
 import { AppController } from './auth.controller';
 import { AppService } from './auth.service';
@@ -14,9 +13,9 @@ import { jwtConstants } from './constants';
       global: true,
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '259200s' },
-    })
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService, GoogleStrategy, PrismaService],
+  providers: [AppService, PrismaService],
 })
 export class AuthModule {}

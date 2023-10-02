@@ -10,6 +10,6 @@ import  { AutoMiddleware } from '../../middleware/auto.middleware'
 })
 export class UserModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AutoMiddleware).forRoutes('user')
+    consumer.apply(AutoMiddleware).exclude({path: 'user', method: RequestMethod.POST})
   }
 }

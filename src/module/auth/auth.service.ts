@@ -1,5 +1,6 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as md5 from 'md5';
 
 import { PrismaService } from 'src/database/PrismaService';
 import { appLoginDto } from './auth.dto';
@@ -8,112 +9,34 @@ import { appLoginDto } from './auth.dto';
 export class AppService {
   constructor(
     private PrismaClient: PrismaService,
-    private jwtService: JwtService
-  ){}
+    private jwtService: JwtService,
+  ) {}
 
-  async googleLogin(req: any) {
-
-    let userInfoToken: string = "";
-    
-    if (!req.user) {
-      return {
-        error: true,
-        message: 'No user from google'
-      }
-    }
-
-    const userExists = await this.PrismaClient.user.findFirst({
-      where: {
-        email: req.user.email
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        nickname: true
-      }
-    });
-
-    if (userExists) {
-
-      userInfoToken = await this.jwtService.signAsync(userExists);
-
-      return {
-        error: false,
-        message: "Usuário cadastrado com sucesso",
-        google: {
-          user: req.user
-        },
-        app:{
-          token: userInfoToken
-        }
-      };
-    }
-
-    const nickname = req.user.email.split('@')
-    const data = {
-      name: `${req.user.firstName} ${req.user.lastName}`,
-      email: req.user.email,
-      nickname: nickname[0],
-      password: "",
-    }
-
-    const user = await this.PrismaClient.user.create({data});
-
-    if (!user) {
-      throw new Error('Erro ao cadastrar usuário');
-    }
-
-    const dataUser = {
-      id: user.id,
-      name: user.name,
-      nickname: user.nickname,
-      email: user.email
-  }
-
-    userInfoToken = await this.jwtService.signAsync(dataUser);
-
-    return {
-      error: false,
-      message: "Usuário cadastrado com sucesso",
-      google: {
-        user: req.user
-      },
-      app: {
-        error : false,
-        message: 'Usuário cadastrado com sucesso',
-        token: userInfoToken
-      }
-    };
-
-  }
-
-  async appLogin(data: appLoginDto){
-
-    let responseData: boolean = true;
-    let messageResponseData: any = {};
+  async appLogin(data: appLoginDto) {
+    let responseData = true;
+    const messageResponseData: any = {};
 
     if (!data.email) {
-      messageResponseData.email = "Campo email obrigatório";
+      messageResponseData.email = 'Campo email obrigatório';
       responseData = false;
     }
 
     if (!data.password) {
-      messageResponseData.password = "Campo password obrigatório";
+      messageResponseData.password = 'Campo password obrigatório';
       responseData = false;
     }
 
-    if(!responseData){
+    if (!responseData) {
       return {
         error: true,
-        message: messageResponseData
-      }
+        message: messageResponseData,
+      };
     }
 
     const emailExists = await this.PrismaClient.user.findFirst({
-      where:{
-        email: data.email
-      }
+      where: {
+        email: data.email,
+      },
     });
 
     if (!emailExists) {
@@ -123,27 +46,28 @@ export class AppService {
     const userExists = await this.PrismaClient.user.findFirst({
       where: {
         email: data.email,
-        password: data.password
+        password: md5(data.password),
       },
       select: {
         id: true,
         name: true,
         email: true,
-        nickname: true
-      }
+        nickname: true,
+      },
     });
 
     if (!userExists) {
       throw new Error('Email ou senha inválidos');
     }
 
-    const userInfoToken = await this.jwtService.signAsync(userExists)
-    
+    const userInfoToken = await this.jwtService.signAsync(userExists);
     return {
       error: false,
       message: 'Usuário logado com sucesso',
-      token: userInfoToken
-    }
-    
+      token: userInfoToken,
+    };
+  }
+  async decodeUser(data: string) {
+    return this.jwtService.decode(data);
   }
 }
