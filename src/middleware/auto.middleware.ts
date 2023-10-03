@@ -19,9 +19,7 @@ export class AutoMiddleware implements NestMiddleware{
 
         const auto = req.headers.authorization.split(' ');
         
-        const user = this.jwtService.decode(auto[1]);
-
-        if (!user) {
+        if (auto[1] !== process.env.AUTH_TOKEN) {
             return res.status(401).json({
                 error: true,
                 message: "Não autorizado"

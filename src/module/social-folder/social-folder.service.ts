@@ -9,8 +9,8 @@ export class SocialFolderService {
     async create(data: SocialFolderDTO) {
         const midiaExists = await this.PrismaClient.sociaMidia.findFirst({
             where: {
-                nickname: data.nickname,
-                link: data.link
+                link: data.link,
+                userId: data.userId,
             }
         });
 
