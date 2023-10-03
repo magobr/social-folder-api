@@ -13,7 +13,7 @@ import { jwtConstants } from './constants';
       global: true,
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '259200s' },
-    }),
+    })
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

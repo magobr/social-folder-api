@@ -31,7 +31,6 @@ export class AppController {
 
   @Get('decode-user')
   async decodeUser(@Req() request: Request) {
-    console.log(request.headers);
     if (request.cookies['SOCIAL_USER']) {
       return await this.appService.decodeUser(request.cookies['SOCIAL_USER']);
     } else {

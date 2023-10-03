@@ -5,8 +5,7 @@ import { Request, Response, NextFunction } from 'express'
 export class AuthMiddleware implements NestMiddleware{
     use(req: Request, res: Response, next: NextFunction) {
         
-        const authUser = req.headers.authorization.split(' ');
-
+        const authUser = req.cookies['SOCIAL_USER'];
         if (!authUser) {
             res.status(401).json({
                 error: true,
