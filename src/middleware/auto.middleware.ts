@@ -1,15 +1,10 @@
 import { Injectable, NestMiddleware } from '@nestjs/common'
 import { Request, Response, NextFunction } from 'express'
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AutoMiddleware implements NestMiddleware{
-    constructor(
-        private jwtService: JwtService
-    ){}
-
     use(req: Request, res: Response, next: NextFunction) {
-        
+
         if (!req.headers.authorization) {
             return res.status(403).json({
                 error: true,
