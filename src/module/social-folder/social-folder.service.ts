@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { SocialFolderDTO } from './social-folder.dto';
 
@@ -14,8 +14,11 @@ export class SocialFolderService {
             }
         });
 
-        if (midiaExists) {
-            throw new Error("Midia already exists");
+        if (midiaExists) { 
+            throw new HttpException({
+                error: true,
+                message: "Midia social já existe"
+            }, HttpStatus.CONFLICT);
         }
 
         const socialMidia = this.PrismaClient.sociaMidia.create({data});
@@ -24,11 +27,20 @@ export class SocialFolderService {
     }
 
     async find (userId:string) {
-        return this.PrismaClient.sociaMidia.findMany({
+        const userMidiaExists = await this.PrismaClient.sociaMidia.findMany({
             where :{
                 userId: userId
             }
-        })
+        });
+
+        if (userMidiaExists.length === 0) {
+            throw new HttpException({
+                error: true,
+                message: "Sem midias sociais"
+            }, HttpStatus.NOT_FOUND)
+        }
+
+        return userMidiaExists
     }
 
     async update(id: string, data: SocialFolderDTO){
@@ -39,7 +51,10 @@ export class SocialFolderService {
         })
 
         if (!socialExists) {
-            throw new Error("Social is not exists")
+            throw new HttpException({
+                error: true,
+                message: "Midia social não existe"
+            }, HttpStatus.NOT_FOUND);
         }
 
         return await this.PrismaClient.sociaMidia.update({
@@ -58,7 +73,10 @@ export class SocialFolderService {
         })
 
         if (!socialExists) {
-            throw new Error("Social is not exists")
+            throw new HttpException({
+                error: true,
+                message: "Midia social não existe"
+            }, HttpStatus.NOT_FOUND);
         }
 
         return await this.PrismaClient.sociaMidia.delete({

@@ -16,7 +16,10 @@ export class UserService {
         })
 
         if (userExists) {
-            throw new Error("User already exists");
+            throw new HttpException({
+                error: true,
+                message: 'E-mail já utilizado'
+            }, HttpStatus.CONFLICT);
         }
 
         data.password = md5(data.password);
@@ -50,7 +53,10 @@ export class UserService {
         });
 
         if (!userExists) {
-            throw new Error ("User don't exists")
+            throw new HttpException({
+                error: true,
+                message: "Usuario não existe"
+            }, HttpStatus.NOT_FOUND)
         }
 
         return {
@@ -71,7 +77,10 @@ export class UserService {
         });
 
         if (!userExists) {
-            throw new HttpException("User don't exists", HttpStatus.NOT_FOUND);
+            throw new HttpException({
+                error: true,
+                message: "Usuario não existe"
+            }, HttpStatus.NOT_FOUND);
         }
 
         return await this.PrismaClient.user.update({
@@ -96,7 +105,10 @@ export class UserService {
         });
 
         if (!userExists) {
-            throw new Error("User don't exists");
+            throw new HttpException({
+                error: true,
+                message: "Usuario não existe"
+            }, HttpStatus.NOT_FOUND);
         }
 
         return this.PrismaClient.user.delete({

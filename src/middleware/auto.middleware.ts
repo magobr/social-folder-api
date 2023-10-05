@@ -8,7 +8,7 @@ export class AutoMiddleware implements NestMiddleware{
         if (!req.headers.authorization) {
             return res.status(403).json({
                 error: true,
-                message: "Nessesário estar autenticado"
+                message: "Token inválido"
             });
         }
 

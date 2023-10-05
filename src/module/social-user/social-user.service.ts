@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 
 @Injectable()
@@ -21,7 +21,10 @@ export class SocialUserService {
         });
 
         if (!userExists) {
-            throw new Error ("User don't exists")            
+            throw new HttpException({
+                error: true,
+                message: "Usuario não existe"
+            }, HttpStatus.NOT_FOUND);   
         }
 
         return {
