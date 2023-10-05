@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as md5 from 'md5';
 
@@ -27,10 +27,10 @@ export class AppService {
     }
 
     if (!responseData) {
-      return {
+      throw new HttpException({
         error: true,
         message: messageResponseData,
-      };
+      }, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     const emailExists = await this.PrismaClient.user.findFirst({
@@ -40,7 +40,10 @@ export class AppService {
     });
 
     if (!emailExists) {
-      throw new Error('Usuário não cadastrado');
+      throw new HttpException({
+        error: true,
+        message: 'Usuário não cadastrado'
+      }, HttpStatus.NOT_FOUND);
     }
 
     const userExists = await this.PrismaClient.user.findFirst({
@@ -57,16 +60,21 @@ export class AppService {
     });
 
     if (!userExists) {
-      throw new Error('Email ou senha inválidos');
+      throw new HttpException({
+        error: true,
+        message: 'Email ou senha inválidos'
+      }, HttpStatus.NOT_FOUND);
     }
 
     const userInfoToken = await this.jwtService.signAsync(userExists);
+
     return {
       error: false,
       message: 'Usuário logado com sucesso',
       token: userInfoToken,
     };
   }
+  
   async decodeUser(data: string) {
     return this.jwtService.decode(data);
   }
