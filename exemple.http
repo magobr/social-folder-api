@@ -1,0 +1,96 @@
+@baseUrl = http://localhost:3001
+@jwtUserCookie = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI1YjBjMzk1LTFiNzctNDExOS1hZDRlLTU5N2EwZGVkODY1MyIsIm5hbWUiOiJUaGlhZ28gTm92YWVzIiwiZW1haWwiOiJub3ZhZXN0aGFnb0BnbWFpbC5jb20iLCJuaWNrbmFtZSI6Im1hZ29ub3ZhZXMiLCJpYXQiOjE3MDg4OTE0NDAsImV4cCI6MTcwOTE1MDY0MH0.VAYkGfyoFYXoM4UPGXZD-WaFGhFAWYRxWrBq3J6yo3o
+@authorizationToken = Bearer SXVpMuUf7sB5gCT7oVBhL1Do76JCGJ80IlCsT2CP29OWUVQ2v9XjMs774lH1ut17
+
+
+# @name social-user
+
+### Get user by nickname
+GET {{baseUrl}}/social-user/magonovaes
+
+
+# @name user
+### Create user
+POST {{baseUrl}}/user
+content-type: application/json
+
+{
+    "name": "Thiago Novaes",
+    "email": "novaesthago323242323@gmail.com",
+    "nickname": "magonovaes2",
+    "password": "Thiago@Abc"
+}
+
+### Get user by ID
+GET {{baseUrl}}/user/b5b0c395-1b77-4119-ad4e-597a0ded8653
+Authorization: {{authorizationToken}}
+Cookie: SOCIAL_USER = {{jwtUserCookie}}
+
+### Update user
+PUT {{baseUrl}}/user/b5b0c395-1b77-4119-ad4e-597a0ded8653
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+Cookie: SOCIAL_USER = {{jwtUserCookie}}
+
+{
+    "name": "Thiago Novaes",
+    "email": "novaesthago@gmail.com",
+    "nickname": "magonovaes",
+    "password": "Thiago@123"
+}
+
+
+### Delete user
+DELETE {{baseUrl}}/user/e863d38e-3a98-484b-894c-0e4b670dd324
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+Cookie: SOCIAL_USER = {{jwtUserCookie}}
+
+
+# @name auth
+
+### Login by App
+POST {{baseUrl}}/auth
+Content-Type: application/json
+
+{
+    "email": "novaesthago@gmail.com",
+    "password": "Thiago@123"
+}
+
+# @name social-folder
+
+### Create Link
+POST {{baseUrl}}/social-folder
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+Cookie: SOCIAL_USER = {{jwtUserCookie}}
+
+{
+    "name": "Thiago Novaes",
+    "nickname": "magonovaes",
+    "link": "https://teste.com",
+    "userId": "b5b0c395-1b77-4119-ad4e-597a0ded8653"
+}
+
+### Get Link
+GET {{baseUrl}}/social-folder/b5b0c395-1b77-4119-ad4e-597a0ded8653
+Authorization: {{authorizationToken}}
+Cookie: SOCIAL_USER = {{jwtUserCookie}}
+
+### Update Link
+PUT {{baseUrl}}/social-folder/facc4343-5630-4351-bce3-46473a5eaead
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+Cookie: SOCIAL_USER = {{jwtUserCookie}}
+
+{
+    "name": "Thiago Novaes",
+    "nickname": "magonovaes",
+    "link": "https://teste.com.br"
+}
+
+### Delete Link
+DELETE {{baseUrl}}/social-folder/facc4343-5630-4351-bce3-46473a5eaead
+Authorization: {{authorizationToken}}
+Cookie: SOCIAL_USER = {{jwtUserCookie}}

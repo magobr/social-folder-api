@@ -46,6 +46,8 @@ export class AppService {
       }, HttpStatus.NOT_FOUND);
     }
 
+    console.log(md5(data.password));
+
     const userExists = await this.PrismaClient.user.findFirst({
       where: {
         email: data.email,
@@ -58,6 +60,8 @@ export class AppService {
         nickname: true,
       },
     });
+
+
 
     if (!userExists) {
       throw new HttpException({

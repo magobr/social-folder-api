@@ -7,20 +7,6 @@ export class SocialFolderService {
     constructor(private PrismaClient: PrismaService){}
 
     async create(data: SocialFolderDTO) {
-        const midiaExists = await this.PrismaClient.sociaMidia.findFirst({
-            where: {
-                link: data.link,
-                userId: data.userId,
-            }
-        });
-
-        if (midiaExists) { 
-            throw new HttpException({
-                error: true,
-                message: "Midia social já existe"
-            }, HttpStatus.CONFLICT);
-        }
-
         const socialMidia = this.PrismaClient.sociaMidia.create({data});
 
         return socialMidia

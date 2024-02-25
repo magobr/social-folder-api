@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@n
 import { UserDTO } from './user.dto';
 import { PrismaService } from 'src/database/PrismaService';
 import * as md5 from 'md5';
-import { Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -11,14 +10,21 @@ export class UserService {
     async create (data: UserDTO){
         const userExists = await this.PrismaClient.user.findFirst({
             where: {
-                email: data.email
+                OR:[
+                    {
+                        email: data.email
+                    },
+                    {
+                        nickname: data.nickname
+                    }
+                ]
             }
-        })
+        });
 
         if (userExists) {
             throw new HttpException({
                 error: true,
-                message: 'E-mail já utilizado'
+                message: 'Usuário ja cadastrado (E-mail ou nickname) já utilizado'
             }, HttpStatus.CONFLICT);
         }
 
@@ -82,6 +88,9 @@ export class UserService {
                 message: "Usuario não existe"
             }, HttpStatus.NOT_FOUND);
         }
+
+        
+        data.password = md5(data.password);
 
         return await this.PrismaClient.user.update({
             data,

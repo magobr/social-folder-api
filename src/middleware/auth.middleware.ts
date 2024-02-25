@@ -26,7 +26,7 @@ export class AuthMiddleware implements NestMiddleware{
         if (!decoded_user) {
             res.status(401).json({
                 error: true,
-                message: "Nessesário estar autenticado",
+                message: "Usuário inválido",
             });
         }
 
